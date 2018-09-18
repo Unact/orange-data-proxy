@@ -1,6 +1,7 @@
 const debug = require('debug')('odp:server');
 const Koa = require('koa');
 const bodyParser = require('koa-body');
+const xmlBodyParser = require('koa-xml-body');
 
 const _ = require('lodash');
 
@@ -13,7 +14,8 @@ api.prefix('/api');
 debug('starting on port', port);
 
 app
-    .use(bodyParser())
+    //.use(bodyParser())
+    .use(xmlBodyParser())
     .use(api.routes())
     .use(api.allowedMethods())
     .listen(port);

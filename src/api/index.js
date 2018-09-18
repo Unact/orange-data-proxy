@@ -25,19 +25,18 @@ router.post('/newReceipt', (ctx) => {
     debug(ctx);
 
     debug(body);
+    debug(body.request.content[0]);
 
-    let order = new OD.Order({
-        id: ctx.params.id,
-        inn: '7725713770',
+    const order = new OD.Order({
+        id: body.request.id[0],
+        inn: body.request.inn[0],
         group: 'Main',
-        type: 1, // Приход
-        customerContact: '+79991234567',
-        taxationSystem: 1, // Общая
+        type: 1
     });
 
     order
         .addPosition({
-            text: 'Тестовый товар',
+            text: 'test',
             quantity: 5,
             price: 10,
             tax: 1,
@@ -65,24 +64,38 @@ router.post('/newReceipt', (ctx) => {
             value: 'В здоровом теле здоровый дух, этот лозунг еще не потух!',
         });
 
-    const { OrangeDataError } = require('node-orangedata/lib/errors');
+    debug(order);
 
-    try {
-        //OD.agent.sendOrder(order);
-    } catch (error) {
-        if (error instanceof OrangeDataError) {
-            // OrangeData errors contains additional info in `errors` property of type Array
-            console.log(error.message, error.errors);
-        }
-        // general errors handling
-    }
+    return OD.agent.sendOrder(order)
+        .then((status) => {
+
+            debug(status);
+
+            ctx.body = xmlBuilder.buildObject({"response": "created"});
+
+        })
+        .catch(err => {
+
+            let msg = err.toString();
+
+            if (err instanceof OrangeDataError) {
+
+                msg = msg + ' (' + err.errors + ')';
+            }
+
+            debug(msg);
+
+            ctx.body =  xmlBuilder.buildObject(
+                {"response":
+                        {"error": msg}
+                });
+
+        });
 
 
 });
 
 router.get('/receiptStatus/:inn/:id', (ctx) => {
-
-    const { OrangeDataError } = require('node-orangedata/lib/errors');
 
     return OD.agent.getOrderStatus(ctx.params.inn, ctx.params.id)
         .then((status) => {
@@ -109,6 +122,5 @@ router.get('/receiptStatus/:inn/:id', (ctx) => {
                 });
 
         });
-
 
 });
