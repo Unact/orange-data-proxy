@@ -22,56 +22,35 @@ router.post('/newReceipt', (ctx) => {
 
     const { body } = ctx.request;
 
-    debug(ctx);
-
-    debug(body);
-    debug(body.request.content[0]);
-
     const order = new OD.Order({
         id: body.request.id[0],
         inn: body.request.inn[0],
-        group: 'Main',
-        type: 1
+        group: body.request.group[0],
+        type: Number(body.request.type[0]),
+        customerContact: body.request.customerContact[0],
+        taxationSystem: Number(body.request.taxationSystem[0])
     });
 
     order
         .addPosition({
-            text: 'test',
-            quantity: 5,
-            price: 10,
-            tax: 1,
-            paymentMethodType: 1,
-            paymentSubjectType: 1,
-            nomenclatureCode: 'igQVAAADMTIzNDU2Nzg5MDEyMwAAAQ==',
-            supplierINN: '3123011520',
-            supplierInfo: { phoneNumbers: ['+79998887766'], name: 'Наименование поставщика' },
+            text: body.request.position[0].text[0],
+            quantity: Number(body.request.position[0].quantity[0]),
+            price: Number(body.request.position[0].price[0]),
+            tax: Number(body.request.position[0].tax[0]),
+            paymentMethodType: Number(body.request.position[0].paymentMethodType[0]),
+            paymentSubjectType: Number(body.request.position[0].paymentSubjectType[0]),
+            nomenclatureCode: body.request.position[0].nomenclatureCode[0]
         })
-        .addPayment({ type: 1, amount: 10 })
-        .addPayment({ type: 2, amount: 40 })
-        .addAgent({
-            agentType: 127,
-            paymentTransferOperatorPhoneNumbers: ['+79998887766'],
-            paymentAgentOperation: 'Операция агента',
-            paymentAgentPhoneNumbers: ['+79998887766'],
-            paymentOperatorPhoneNumbers: ['+79998887766'],
-            paymentOperatorName: 'Наименование оператора перевода',
-            paymentOperatorAddress: 'Адрес оператора перевода',
-            paymentOperatorINN: '3123011520',
-            supplierPhoneNumbers: ['+79998887766'],
-        })
-        .addUserAttribute({
-            name: 'citation',
-            value: 'В здоровом теле здоровый дух, этот лозунг еще не потух!',
+        .addPayment({
+            type: Number(body.request.payment[0].type[0]),
+            amount: Number(body.request.payment[0].amount[0])
         });
 
-    debug(order);
 
     return OD.agent.sendOrder(order)
         .then((status) => {
 
-            debug(status);
-
-            ctx.body = xmlBuilder.buildObject({"response": "created"});
+            ctx.body = xmlBuilder.buildObject({"response": 'text'});
 
         })
         .catch(err => {
