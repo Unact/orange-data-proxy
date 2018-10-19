@@ -7,6 +7,10 @@
     "serve": "nodemon src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Unact/orange-data-proxy"
+  },
   "author": "Unact",
   "license": "ISC",
   "dependencies": {

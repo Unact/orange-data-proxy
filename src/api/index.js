@@ -50,7 +50,7 @@ router.post('/newReceipt', (ctx) => {
     return OD.agent.sendOrder(order)
         .then((status) => {
 
-            ctx.body = xmlBuilder.buildObject({"response": 'text'});
+            ctx.body = xmlBuilder.buildObject({"response": 'ok'});
 
         })
         .catch(err => {
@@ -66,7 +66,7 @@ router.post('/newReceipt', (ctx) => {
 
             ctx.body =  xmlBuilder.buildObject(
                 {"response":
-                        {"error": msg}
+                    {"error": msg}
                 });
 
         });
@@ -78,8 +78,6 @@ router.get('/receiptStatus/:inn/:id', (ctx) => {
 
     return OD.agent.getOrderStatus(ctx.params.inn, ctx.params.id)
         .then((status) => {
-
-            debug(status);
 
             ctx.body = xmlBuilder.buildObject({"response": status});
 
@@ -93,11 +91,9 @@ router.get('/receiptStatus/:inn/:id', (ctx) => {
                 msg = msg + ' (' + err.errors + ')';
             }
 
-            debug(msg);
-
             ctx.body =  xmlBuilder.buildObject(
                 {"response":
-                        {"error": msg}
+                    {"error": msg}
                 });
 
         });
